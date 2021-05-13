@@ -1,17 +1,20 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
 import { EmployeesService } from './employees.service';
 import { Employee } from './employee.entity';
 import { EmployeeCreateDto } from './employee-create.dto';
 import { DeleteResult, UpdateResult } from "typeorm";
 import { EmployeeUpdateDto } from "./employee-update.dto";
+import { EmployeeFilterDto } from "./employee-filter.dto";
 
 @Controller('employees')
 export class EmployeesController {
   constructor(private employeesService: EmployeesService) {}
 
   @Get()
-  public async getEmployees(): Promise<Employee[]> {
-    return this.employeesService.getEmployees();
+  public async getEmployees(
+    @Query() searchFilter: EmployeeFilterDto,
+  ): Promise<Employee[]> {
+    return this.employeesService.getEmployees(searchFilter);
   }
 
   @Get(':id')
