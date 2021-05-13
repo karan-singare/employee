@@ -1,15 +1,30 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { Employee } from './employee.entity';
 import { EmployeeCreateDto } from './employee-create.dto';
-import { DeleteResult, UpdateResult } from "typeorm";
-import { EmployeeUpdateDto } from "./employee-update.dto";
-import { EmployeeFilterDto } from "./employee-filter.dto";
-import { ApiBody, ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { EmployeeUpdateDto } from './employee-update.dto';
+import { EmployeeFilterDto } from './employee-filter.dto';
+import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('employees')
 export class EmployeesController {
-  constructor(private employeesService: EmployeesService) {}
+  constructor(
+    private employeesService: EmployeesService,
+    @Inject('DEPARTMENT_SERVICE') private readonly client: ClientProxy,
+  ) {}
 
   @Get()
   @ApiOkResponse({
@@ -44,7 +59,11 @@ export class EmployeesController {
   public async createEmployee(
     @Body() createEmployeeDto: EmployeeCreateDto,
   ): Promise<Employee> {
-    return this.employeesService.createEmployee(createEmployeeDto);
+    const employee = await this.employeesService.createEmployee(
+      createEmployeeDto,
+    );
+    this.client.emit('employee_created', Employee);
+    return employee;
   }
 
   @Put(':id')
