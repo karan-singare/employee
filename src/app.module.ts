@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EmployeesModule } from './employees/employees.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CustomLogger } from "./employees/logger/custom-logger";
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'employees',
       autoLoadEntities: true,
       synchronize: true,
+      logging: true,
+      logger: new CustomLogger(),
     }),
     EmployeesModule,
   ],

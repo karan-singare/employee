@@ -5,18 +5,28 @@ import { EmployeeCreateDto } from './employee-create.dto';
 import { DeleteResult, UpdateResult } from "typeorm";
 import { EmployeeUpdateDto } from "./employee-update.dto";
 import { EmployeeFilterDto } from "./employee-filter.dto";
+import { ApiBody, ApiCreatedResponse, ApiOkResponse } from "@nestjs/swagger";
 
 @Controller('employees')
 export class EmployeesController {
   constructor(private employeesService: EmployeesService) {}
 
   @Get()
+  @ApiOkResponse({
+    description: 'Get All the employees',
+  })
+  @ApiBody({
+    type: EmployeeFilterDto,
+  })
   public async getEmployees(
     @Query() searchFilter: EmployeeFilterDto,
   ): Promise<Employee[]> {
     return this.employeesService.getEmployees(searchFilter);
   }
 
+  @ApiOkResponse({
+    description: 'Get Employee By ID',
+  })
   @Get(':id')
   public async getEmployeeById(
     @Param('id', ParseIntPipe) id: number,
@@ -25,6 +35,12 @@ export class EmployeesController {
   }
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'Employee Creation',
+  })
+  @ApiBody({
+    type: EmployeeCreateDto,
+  })
   public async createEmployee(
     @Body() createEmployeeDto: EmployeeCreateDto,
   ): Promise<Employee> {
@@ -32,6 +48,9 @@ export class EmployeesController {
   }
 
   @Put(':id')
+  @ApiBody({
+    type: EmployeeUpdateDto,
+  })
   public async updateEmployee(
     @Param('id', ParseIntPipe) id: number,
     @Body() employeeUpdateDto: EmployeeUpdateDto,

@@ -20,7 +20,6 @@ export class EmployeesService {
   ): Promise<Employee[]> {
 
     const { search, sort, sortCriteria } = filterDto;
-    console.log(filterDto);
     const query = this.employeeRepository.createQueryBuilder('employee');
 
     if (search) {
